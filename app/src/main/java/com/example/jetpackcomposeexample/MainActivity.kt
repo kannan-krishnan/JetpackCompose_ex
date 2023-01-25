@@ -16,6 +16,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
@@ -29,6 +30,10 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.constraintlayout.compose.ChainStyle
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.ConstraintSet
+import androidx.constraintlayout.compose.Dimension
 import kotlinx.coroutines.launch
 import kotlin.random.Random
 
@@ -36,7 +41,9 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            LazyColumn()
+
+            ConstraintLayoutEx()
+//            LazyColumn()
 //            SnackBarExample()
 
 
@@ -109,6 +116,43 @@ class MainActivity : ComponentActivity() {
              }*/
         }
     }
+}
+
+
+@Composable
+fun ConstraintLayoutEx(){
+
+    val constantsSet= ConstraintSet {
+        val greenBox=createRefFor("greenbox")
+        val redBox=createRefFor("redbox")
+    constrain(greenBox){
+        top.linkTo(parent.top)
+        start.linkTo(parent.start)
+        width= Dimension.value(150.dp)
+        height= Dimension.value(150.dp)
+    }
+        constrain(redBox){
+            top.linkTo(parent.top)
+            start.linkTo(greenBox.end)
+            end.linkTo(parent.end)
+            width= Dimension.value(150.dp)
+            height= Dimension.value(150.dp)
+        }
+        createVerticalChain(    greenBox,redBox, chainStyle = ChainStyle.Packed)
+    }
+    ConstraintLayout(constantsSet, modifier = Modifier.fillMaxSize()) {
+        
+        Box(modifier = Modifier
+            .background(Color.Green)
+            .layoutId("greenbox"))
+        Box(modifier = Modifier
+            .background(Color.Red)
+            .layoutId("redbox")) {
+
+        }
+
+
+}
 }
 
 @Composable
