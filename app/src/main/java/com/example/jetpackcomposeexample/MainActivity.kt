@@ -39,7 +39,20 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            ColorBox(modifier=Modifier.fillMaxSize())
+            Column() {
+                val colors= remember {
+                    mutableStateOf(Color.Blue)
+                }
+                ColorBox(modifier= Modifier
+                    .fillMaxSize()
+                    .weight(1f)){
+                    colors.value=it
+                }
+                Box(modifier = Modifier.weight(1f).fillMaxSize().background(colors.value)) {
+                    
+                }
+            }
+
 //            TextStyleEx()
 
 
@@ -95,7 +108,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun ColorBox(modifier: Modifier=Modifier){
+fun ColorBox(modifier: Modifier=Modifier,updateColor: (Color)-> Unit){
     val colors=  remember {
        mutableStateOf(Color.Gray)
     }
@@ -104,13 +117,15 @@ fun ColorBox(modifier: Modifier=Modifier){
         .background(colors.value)
         .clickable {
 
-            colors.value =
+            colors.value=(
                 Color(
                     Random.nextFloat(),
                     Random.nextFloat(),
                     Random.nextFloat(),
                     1f
                 )
+            )
+            updateColor(colors.value)
         }) {
 
     }
