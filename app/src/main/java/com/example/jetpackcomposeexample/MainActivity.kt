@@ -9,11 +9,10 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.magnifier
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Card
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -33,13 +32,16 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.launch
+import org.intellij.lang.annotations.JdkConstants.HorizontalAlignment
 import kotlin.random.Random
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            Column() {
+            SnackBarExample()
+            /*Column() {
                 val colors= remember {
                     mutableStateOf(Color.Blue)
                 }
@@ -48,10 +50,13 @@ class MainActivity : ComponentActivity() {
                     .weight(1f)){
                     colors.value=it
                 }
-                Box(modifier = Modifier.weight(1f).fillMaxSize().background(colors.value)) {
+                Box(modifier = Modifier
+                    .weight(1f)
+                    .fillMaxSize()
+                    .background(colors.value)) {
                     
                 }
-            }
+            }*/
 
 //            TextStyleEx()
 
@@ -108,6 +113,47 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
+fun SnackBarExample(){
+    val scaffold= rememberScaffoldState()
+
+    var text by remember {
+        mutableStateOf("")
+    }
+    val scope= rememberCoroutineScope()
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        scaffoldState = scaffold
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        , modifier = Modifier.padding(10.dp)
+        ) {
+            TextField(value =text ,label={
+                                         Text(text = "Enter Name")
+            },
+                onValueChange ={
+                    text=it
+                }
+            , singleLine = true,
+                modifier = Modifier.fillMaxWidth()
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            Button(onClick = {
+                scope.launch {
+                    scaffold.snackbarHostState.showSnackbar("hellooo $text")
+                }
+            }) {
+                Text(text = "Click me")
+                
+            }
+            
+        }
+        
+    }
+}
+
+@Composable
 fun ColorBox(modifier: Modifier=Modifier,updateColor: (Color)-> Unit){
     val colors=  remember {
        mutableStateOf(Color.Gray)
@@ -117,14 +163,14 @@ fun ColorBox(modifier: Modifier=Modifier,updateColor: (Color)-> Unit){
         .background(colors.value)
         .clickable {
 
-            colors.value=(
-                Color(
-                    Random.nextFloat(),
-                    Random.nextFloat(),
-                    Random.nextFloat(),
-                    1f
-                )
-            )
+            colors.value = (
+                    Color(
+                        Random.nextFloat(),
+                        Random.nextFloat(),
+                        Random.nextFloat(),
+                        1f
+                    )
+                    )
             updateColor(colors.value)
         }) {
 
